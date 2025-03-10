@@ -1,0 +1,26 @@
+{
+  "staging": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-amplifyab9499e6c8704-staging-194837-authRole",
+      "UnauthRoleArn": "arn:aws:iam::567326757394:role/amplify-amplifyab9499e6c8704-staging-194837-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::567326757394:role/amplify-amplifyab9499e6c8704-staging-194837-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-amplifyab9499e6c8704-staging-194837-deployment",
+      "UnauthRoleName": "amplify-amplifyab9499e6c8704-staging-194837-unauthRole",
+      "StackName": "amplify-amplifyab9499e6c8704-staging-194837",
+      "StackId": "arn:aws:cloudformation:us-east-1:567326757394:stack/amplify-amplifyab9499e6c8704-staging-194837/bd188630-b703-11ee-9daf-0e928357b589",
+      "AmplifyAppId": "d3hwkw00m3jjnu"
+    },
+    "categories": {
+      "auth": {
+        "RoammAppFrontEnd": {}
+      },
+      "function": {
+        "newCreateUser": {
+          "deploymentBucketName": "amplify-amplifyab9499e6c8704-staging-194837-deployment",
+          "s3Key": "amplify-builds/newCreateUser-4455662b547674737178-build.zip"
+        }
+      }
+    }
+  }
+}

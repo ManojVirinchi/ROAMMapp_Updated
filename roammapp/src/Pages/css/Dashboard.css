@@ -1,0 +1,56 @@
+.list{
+    margin-top: 50px;
+    font-size: smaller;
+    text-align: center;
+}
+
+.list-element{
+    width: inherit;
+    padding: 4px;
+    margin:5px 0px;
+}
+
+.active-element{
+    background-color: #4F77AA;
+    color: white !important;
+    border-radius: 20px;
+
+}
+
+.sub-element{
+    text-align: right;
+    border-radius: 20px 0px 0px 20px;
+    width: 80%;
+    margin-bottom: 5px;
+    margin-left: 25px;
+}
+
+.sub-element-active{
+    background-color: lightslategrey;
+    font: white;
+}
+
+h3{
+    text-align: center;
+    font-weight: 700
+}
+
+.card-container{
+    text-align: center;
+    height: 75%;
+    width: 80%;
+    font-weight: 800;
+    font-size:small;
+    padding-top: 5px;
+    background-color: black;
+    color: white;
+}
+
+.card-number{
+    font-size: x-large;
+}
+
+.info-value{
+    font-size: x-large;
+}
+
