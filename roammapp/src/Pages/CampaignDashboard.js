@@ -42,6 +42,8 @@ function CampaignDashboard(props){
 
 
     const [isAllSelected, setIsAllSelected] = useState(false);
+    const [showModalForDataTypes, setShowModalForDataTypes] = useState(false);
+
     
 
   
@@ -145,10 +147,10 @@ function CampaignDashboard(props){
         }
     }, [avgCompliance])
      // Open modal for the selected participant
-  const handleDownloadClick = (participant) => {
-    setCurrentParticipant(participant);
-    setShowModal(true);
-  };
+     const handleDownloadClick = (participant) => {
+        setCurrentParticipant(participant);
+        setShowModalForDataTypes(true); // Open modal for data types
+    };
 
   // Close modal
   const handleCloseModal = () => {
@@ -156,13 +158,13 @@ function CampaignDashboard(props){
     setSelectedDataTypes([]);
   };
 
-  // Handle checkbox selection
-//   const handleCheckboxChange = (e) => {
-//     const { name, checked } = e.target;
-//     setSelectedDataTypes((prev) =>
-//       checked ? [...prev, name] : prev.filter((type) => type !== name)
-//     );
-//   };
+//   Handle checkbox selection
+  const handleCheckboxChangeDatatypes = (e) => {
+    const { name, checked } = e.target;
+    setSelectedDataTypes((prev) =>
+      checked ? [...prev, name] : prev.filter((type) => type !== name)
+    );
+  };
 const handleCheckboxChange = (e, isAll) => {
     const { name, checked } = e.target;
 
@@ -182,83 +184,92 @@ const handleCheckboxChange = (e, isAll) => {
 
 
   // Download selected data
-//   const handleDownloadData = async () => {
-//     const { campaignid, participantid } = currentParticipant;
-//     console.log(currentParticipant)
-//     console.log("Payload:", {
-//         campaign_id: campaignid,
-//         participant_id: participantid,
-//         selection: selectedDataTypes,
-//         email: props.user.email, // Include email from Redux state
-//     });
-//     try {
-//         // Make a POST request to the Lambda API
-//         const response = await axios.post(
-//           'https://aa2397tzu2-vpce-00569c5e62069a9a0.execute-api.us-east-1.amazonaws.com/roamm/new_get_csv_files',
-//           {
-//             campaign_id: campaignid,
-//             participant_id: participantid,
-//             selection: selectedDataTypes,
-//             email: props.user.email,
-//           },
-//           {
-//             responseType: 'json', 
-//           }
-//         );
-//           console.log(response)
-//         // Check if response contains Base64 data
-//         if (response.data && response.data.body) {
-//           // Decode Base64 data
-//           const binaryData = atob(response.data.body); // Decode Base64 to binary string
-    
-//           // Convert binary string to an ArrayBuffer
-//           const arrayBuffer = new Uint8Array(
-//             binaryData.split('').map((char) => char.charCodeAt(0))
-//           );
-    
-//           // Create a Blob from the ArrayBuffer
-//           const blob = new Blob([arrayBuffer], { type: 'application/zip' });
-    
-//           // Create a download link
-//           const url = window.URL.createObjectURL(blob);
-//           const link = document.createElement('a');
-//           link.href = url;
-//           link.setAttribute('download', `${participantid}_data_files.zip`); // File name
-//           document.body.appendChild(link);
-//           link.click();
-//           document.body.removeChild(link);
-//         } else {
-//           alert('Failed to download file. No data received.');
-//         }
-//       } catch (error) {
-//         console.error('Error downloading file:', error);
-//         alert('An error occurred while downloading the file.');
-//       }
-//     handleCloseModal();
-//   };
+  const handleDownloadData = async () => {
+    const { campaignid, participantid } = currentParticipant;
+    console.log(currentParticipant);
 
-
+    console.log("Request Payload:", {
+        campaign_id: campaignid,
+        participant_id: participantid,
+        selection: selectedDataTypes,
+        email: props.user.email,
+    });
     
 
+    try {
+        // Make a POST request to the Lambda API
+        const response = await axios.post(
+            'https://aa2397tzu2-vpce-00569c5e62069a9a0.execute-api.us-east-1.amazonaws.com/roamm/new_get_csv_files',
+            {
+                campaign_id: campaignid,
+                participant_id: participantid,
+                selection: selectedDataTypes,
+                email: props.user.email,
+            },
+            {
+                responseType: 'json',
+            }
+        );
+
+        console.log(`response : ${response.data.body}`);
+
+        if (response.data && response.data.body) {
+            // Attempt to decode the response body
+            try {
+                const binaryData = atob(response.data.body);
+                const arrayBuffer = new Uint8Array(
+                    binaryData.split('').map((char) => char.charCodeAt(0))
+                );
+
+                const blob = new Blob([arrayBuffer], { type: 'application/zip' });
+
+                const url = window.URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', `${participantid}_data_files.zip`);
+                
+                document.body.appendChild(link);
+                link.click();
+                
+                document.body.removeChild(link);
+            } catch (error) {
+                console.error('Error decoding Base64:', error);
+                alert('Failed to decode the response data. Please check the API response.');
+            }
+        } else {
+            alert('Failed to download file. No data received.');
+        }
+    } catch (error) {
+        console.error('Error downloading file:', error);
+        alert('An error occurred while downloading the file.');
+    }
+
+    handleCloseModal();
+};
 
 
   const handleDownloadAllData = async () => {
+    setShowModal(true); // Open modal for selecting participant IDs
+    setIsAllSelected(false); // Reset "Select All" checkbox
+    setSelectedDataTypes([]); // Clear selected data types
+};
+const handleDownloadAllDataFromModal = async () => {
     console.log("Downloading all participant data...");
 
     const participantIdsToSend = isAllSelected
-        ? participantList.map((p) => p.participantid):selectedDataTypes;
+        ? participantList.map((p) => p.participantid) : selectedDataTypes;
+
     console.log(`campaign id:${campaignId}`);
     console.log(`participant list ${participantIdsToSend}`);
-    console.log(`email: ${props.user.email}`)
+    console.log(`email: ${props.user.email}`);
 
     try {
         const response = await axios.post(
             'https://aa2397tzu2-vpce-00569c5e62069a9a0.execute-api.us-east-1.amazonaws.com/roamm/new_get_csv_files',
             {
                 campaign_id: campaignId,
-                participant_id_list: participantIdsToSend, 
-                // selection: selectedDataTypes,
-                email: props.user.email, 
+                participant_id_list: participantIdsToSend,
+                email: props.user.email,
             },
             { responseType: 'json' }
         );
@@ -266,44 +277,16 @@ const handleCheckboxChange = (e, isAll) => {
         console.log(response);
 
         if (response.status === 200) {
-
-            handleCloseModal();
+            handleCloseModal(); // Close the modal
             window.alert(`Data download has started. The data will be sent to ${props.user.email}`);
         } else {
             alert('Failed to start the data download.');
         }
+    } catch (error) {
+        console.error('Error downloading file:', error);
+        alert('An error occurred while downloading the file.');
     }
-    catch (error) {
-            console.error('Error downloading file:', error);
-            alert('An error occurred while downloading the file.');
-    }
-}
-
-    //     if (response.data && response.data.body) {
-    //         const binaryData = atob(response.data.body);
-    //         const arrayBuffer = new Uint8Array(
-    //             binaryData.split('').map((char) => char.charCodeAt(0))
-    //         );
-
-    //         const blob = new Blob([arrayBuffer], { type: 'application/zip' });
-
-    //         const url = window.URL.createObjectURL(blob);
-    //         const link = document.createElement('a');
-    //         link.href = url;
-    //         link.setAttribute('download', `${campaignId}_all_participants_data.zip`);
-            
-    //         document.body.appendChild(link);
-    //         link.click();
-            
-    //         document.body.removeChild(link);
-    //     } else {
-    //         alert('Failed to download file. No data received.');
-    //     }
-    // } 
-    // }
-
-
-
+};
 
 
 
@@ -348,7 +331,7 @@ const handleCheckboxChange = (e, isAll) => {
                         <Container style={{padding: "15px"}}>
                             <Alert key={'primary'} variant={"primary"}>The Data in the columns {<b>Prompt Count, Compliance, Sensor Count, Battery Decay</b>} are calculated only for the data collected on {<b>{collectionTime?collectionTime:"-"}</b>}</Alert>
                         </Container>
-                    {/* </Row>
+                    </Row>
                     <Row className="mb-3">
                             <Col>
                                 <Button variant="primary" onClick={handleDownloadAllData}>
@@ -356,7 +339,7 @@ const handleCheckboxChange = (e, isAll) => {
                                 </Button>
                             </Col>
                     </Row>
-                    {loader?<Loader/>: (<Row className="mt-3"> */}
+                    <Row className="mt-3"> 
                         
 
 <BootstrapTable  keyField='name' data={participantList} columns={[
@@ -401,27 +384,27 @@ const handleCheckboxChange = (e, isAll) => {
                                 },
                                 
                                     {
-                                        dataField: 'download',
-                                        text: 'Download',
+                                        // dataField: 'download',
+                                        // text: 'Download',
                                         
-                                        // Add a custom header formatter to include the button
-                                        headerFormatter: () => (
-                                            <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-                                                <span>Download</span>
-                                                <FaDownload 
-                                                    style={{ marginLeft: "10px", cursor: "pointer" }}
-                                                    onClick={() => setShowModal(true)} // Open the modal instead
-                                                />
-                                            </div>
-                                        ),
-                                    // dataField: 'download',
-                                    // text: 'Download',
-                                    // // formatter: (cell, row) => (
-                                    // //   <FaDownload onClick={(e) => {
-                                    // //     e.stopPropagation();
-                                    // //     handleDownloadClick(row);
-                                    // // }}>Download</FaDownload>
-                                    // // ),
+                                        // // Add a custom header formatter to include the button
+                                        // headerFormatter: () => (
+                                        //     <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+                                        //         <span>Download</span>
+                                        //         <FaDownload 
+                                        //             style={{ marginLeft: "10px", cursor: "pointer" }}
+                                        //             onClick={() => setShowModal(true)} // Open the modal instead
+                                        //         />
+                                        //     </div>
+                                        // ),
+                                    dataField: 'download',
+                                    text: 'Download',
+                                    formatter: (cell, row) => (
+                                      <FaDownload onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleDownloadClick(row);
+                                    }}>Download</FaDownload>
+                                    ),
                                   },
                                 ]} 
                                 hover 
@@ -436,64 +419,70 @@ const handleCheckboxChange = (e, isAll) => {
                                         navigate("/participantDashboard")
                                 }}} 
                                 />
-                                {/* Popup Modal */}
-                                {/* <Modal show={showModal} onHide={handleCloseModal} fullscreen={'lg-down'}>
-                                    <Modal.Header closeButton>
-                                    <Modal.Title>Select Data to Download</Modal.Title>
-                                    </Modal.Header>
-                                    <Modal.Body>
-                                    <Form>
-                                        {['Numeric', 'Discrete', 'Cognitive', 'GPS', 'HealthKit', 'All'].map((type) => (
-                                        <Form.Check
-                                            key={type}
-                                            type="checkbox"
-                                            name={type}
-                                            label={type}
-                                            onChange={handleCheckboxChange}
-                                        />
-                                        ))}
-                                    </Form>
-                                    </Modal.Body>
-                                    <Modal.Footer>
-                                    <Button variant="secondary" onClick={handleCloseModal}>Close</Button>
-                                    <Button variant="primary" onClick={handleDownloadData}>Download</Button>
-                                    </Modal.Footer>
-                                </Modal> */}
+                                {/* Popup Modal for bulk download*/}
+                               
                                 <Modal show={showModal} onHide={handleCloseModal} fullscreen={'lg-down'}>
-                                    <Modal.Header closeButton>
-                                        <Modal.Title>Select Data to Download</Modal.Title>
-                                    </Modal.Header>
-                                    <Modal.Body>
-                                        <Form>
-                                            {/* "Select All" Checkbox */}
-                                            <Form.Check
-                                                type="checkbox"
-                                                name="All"
-                                                label="Select All"
-                                                onChange={(e) => handleCheckboxChange(e, true)} // Pass true for the "Select All" checkbox
-                                                checked={isAllSelected}
-                                            />
+                                        <Modal.Header closeButton>
+                                            <Modal.Title>Select Participants to Download</Modal.Title>
+                                        </Modal.Header>
+                                        <Modal.Body>
+                                            <Form>
+                                                {/* "Select All" Checkbox */}
+                                                <Form.Check
+                                                    type="checkbox"
+                                                    name="All"
+                                                    label="Select All"
+                                                    onChange={(e) => handleCheckboxChange(e, true)} // Pass true for the "Select All" checkbox
+                                                    checked={isAllSelected}
+                                                />
 
-                                            {/* Individual Participant Checkboxes */}
-                                            {[... new Set(participantList.map(p=>p.participantid))].sort((a, b) => a.localeCompare(b)) // Sort PIDs alphabetically
-                                                .map((pid) => (
+                                                {/* Individual Participant Checkboxes */}
+                                                {[...new Set(participantList.map(p => p.participantid))].sort((a, b) => a.localeCompare(b)) // Sort PIDs alphabetically
+                                                    .map((pid) => (
+                                                        <Form.Check
+                                                            key={pid}
+                                                            type="checkbox"
+                                                            name={pid}
+                                                            label={`PID: ${pid}`}
+                                                            onChange={(e) => handleCheckboxChange(e, false)} // Pass false for individual checkboxes
+                                                            checked={selectedDataTypes.includes(pid)}
+                                                            disabled={isAllSelected} // Disable if "Select All" is selected
+                                                        />
+                                                    ))}
+                                            </Form>
+                                        </Modal.Body>
+                                        <Modal.Footer>
+                                            <Button variant="secondary" onClick={handleCloseModal}>Close</Button>
+                                            <Button variant="primary" onClick={handleDownloadAllDataFromModal}>Download</Button>
+                                        </Modal.Footer>
+                                    </Modal>
+
+
+                                {/* Popup Modal for individual download*/}
+                                    <Modal show={showModalForDataTypes} onHide={() => setShowModalForDataTypes(false)} fullscreen={'lg-down'}>
+                                        <Modal.Header closeButton>
+                                            <Modal.Title>Select Data to Download</Modal.Title>
+                                        </Modal.Header>
+                                        <Modal.Body>
+                                            <Form>
+                                                {['Numeric', 'Discrete', 'Cognitive', 'GPS', 'HealthKit', 'All'].map((type) => (
                                                     <Form.Check
-                                                        key={pid}
+                                                        key={type}
                                                         type="checkbox"
-                                                        name={pid}
-                                                        label={`PID: ${pid}`}
-                                                        onChange={(e) => handleCheckboxChange(e, false)} // Pass false for individual checkboxes
-                                                        checked={selectedDataTypes.includes(pid)}
-                                                        disabled={isAllSelected} // Disable if "Select All" is selected
+                                                        name={type}
+                                                        label={type}
+                                                        onChange={handleCheckboxChangeDatatypes}
                                                     />
                                                 ))}
-                                        </Form>
-                                    </Modal.Body>
-                                    <Modal.Footer>
-                                        <Button variant="secondary" onClick={handleCloseModal}>Close</Button>
-                                        <Button variant="primary" onClick={handleDownloadAllData}>Download</Button>
-                                    </Modal.Footer>
-                                </Modal>
+                                            </Form>
+                                        </Modal.Body>
+                                        <Modal.Footer>
+                                            <Button variant="secondary" onClick={() => setShowModalForDataTypes(false)}>Close</Button>
+                                            <Button variant="primary" onClick={handleDownloadData}>Download</Button>
+                                        </Modal.Footer>
+                                    </Modal>
+
+
 
 
                     </Row>
