@@ -202,9 +202,10 @@ const handleCheckboxChange = (e, isAll) => {
             'https://aa2397tzu2-vpce-00569c5e62069a9a0.execute-api.us-east-1.amazonaws.com/roamm/new_get_csv_files',
             {
                 campaign_id: campaignid,
+                email: props.user.email,
                 participant_id: participantid,
                 selection: selectedDataTypes,
-                email: props.user.email,
+                
             },
             {
                 responseType: 'json',
