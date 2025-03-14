@@ -212,33 +212,14 @@ const handleCheckboxChange = (e, isAll) => {
         );
 
         console.log(`response : ${response.data.body}`);
-
-        if (response.data && response.data.body) {
-            // Attempt to decode the response body
-            try {
-                const binaryData = atob(response.data.body);
-                const arrayBuffer = new Uint8Array(
-                    binaryData.split('').map((char) => char.charCodeAt(0))
-                );
-
-                const blob = new Blob([arrayBuffer], { type: 'application/zip' });
-
-                const url = window.URL.createObjectURL(blob);
-                const link = document.createElement('a');
-                link.href = url;
-                link.setAttribute('download', `${participantid}_data_files.zip`);
-                
-                document.body.appendChild(link);
-                link.click();
-                
-                document.body.removeChild(link);
-            } catch (error) {
-                console.error('Error decoding Base64:', error);
-                alert('Failed to decode the response data. Please check the API response.');
-            }
+        if (response.status === 200) {
+            handleCloseModal(); // Close the modal
+            window.alert(`Data download has started. The data will be sent to ${props.user.email}`);
         } else {
-            alert('Failed to download file. No data received.');
+            alert('Failed to start the data download.');
         }
+
+        
     } catch (error) {
         console.error('Error downloading file:', error);
         alert('An error occurred while downloading the file.');
