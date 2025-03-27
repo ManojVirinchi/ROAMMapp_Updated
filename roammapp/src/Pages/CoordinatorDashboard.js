@@ -76,7 +76,7 @@ function CoordinatorDashboard(props){
         };
         const res = await axios.post("https://aa2397tzu2-vpce-00569c5e62069a9a0.execute-api.us-east-1.amazonaws.com/roamm/new_get_coordinator_permissions",config)
         console.log(res)
-        setManagerList(res.data.body)
+        setManagerList(res.data.new_body)
         setLoader(false)
     }
         catch(err){
@@ -113,6 +113,16 @@ function CoordinatorDashboard(props){
                                     dataField: 'managerid',
                                     text: 'Manager Id'
                                 },
+                                {
+                                    dataField: 'total_participants',
+                                    text: 'Total Participants',
+                                    sort: true
+                                },
+                                {
+                                    dataField: 'active_participants',
+                                    text: 'Active Participants',
+                                    sort: true
+                                }
                                 ]} 
                                 hover 
                                 headerClasses={"table-header-style"} 
