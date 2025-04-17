@@ -7,7 +7,6 @@ import CustomCircularProgressBar from '../Components/CustomCircularProgressBar';
 import '../index.css'
 import CustomLineChart from '../Components/CustomLineChart';
 import DescreteBarChart from '../Components/DescreteBarChart';
-import DescreteWeekBox from '../Components/DescreteWeekBox';
 import {connect} from 'react-redux'
 import BootstrapTable from 'react-bootstrap-table-next';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
@@ -31,9 +30,7 @@ function ParticipantAnalysis(props){
     const [descreteData, setDescreteData] = useState({values:[], labels:[]})
     const [sensorData, setSensorData] = useState({values:[],labels:[]})
     const [gpsData, setGpsData] = useState([])
-    // const [numericQuestion,setNumericQuestion] = useState("")
-    const [numericQuestion, setNumericQuestion] = useState({});
-
+    const [numericQuestion,setNumericQuestion] = useState("")
     const [descreteQuestion,setDescreteQuestion] = useState("")
     const [sensorQuestion, setSensorQuestion] = useState("")
     const [questions,setQuestions] = useState(null)
@@ -55,8 +52,6 @@ function ParticipantAnalysis(props){
     const [errorCount,setErrorCount] = useState([0,0,0])
     const [flag, setFlag] = useState(true)
     const [avgMetrics, setAvgMetrics] = useState(0)
-    const [selectedDay, setSelectedDay] = useState('');
-
 
 
     const ParticipantData = {
@@ -131,15 +126,6 @@ function ParticipantAnalysis(props){
         }
         setDates(ranges);
       }
-      
-
-      const handleDayChange = (e) => {
-        setSelectedDay(e.target.value);
-        // You'll need to modify your data fetching functions to use this day value
-        // getNumericData(); 
-        // getDescreteData();
-        // getSensorData();
-    };
       
     useEffect(()=>{
         //handleInfo()
@@ -370,9 +356,7 @@ function ParticipantAnalysis(props){
             
         }
     }
-    
-    
-    
+
     function countValues(arr, target){
         const countOccurrences = arr.reduce((count, currentValue) => {
             return currentValue === target ? count + 1 : count;
@@ -521,10 +505,6 @@ function ParticipantAnalysis(props){
         setLoadingComponents({...loadingComponents,numericData:false})
         
     }
-    
-    
-    
-
     const handleDescreteQuestionChange = async (e) => {
         setLoadingComponents({...loadingComponents,descreteData:true})
         await setDescreteQuestion({...JSON.parse(e.target.value)})
@@ -600,257 +580,102 @@ function ParticipantAnalysis(props){
         }
     };
     
-    return (
-        <div style={{ height: "100%", overflowY: "auto" }} className="bg-image mb-5">
-            <NavBar />
-            <div className="mb-5" style={{ height: "inherit" }}>
-                <Container fluid style={{ height: "100%" }}>
-                    <Row style={{ height: "100%" }}>
-                        {/* Side Menu */}
-                        <Col
-                            lg={2}
-                            // style={{
-                            //     backgroundColor: "#f8f9fa",
-                            //     height: "100vh",
-                            //     padding: "0",
-                            //     borderRight: "1px solid rgba(0, 0, 0, 0.1)",
-                            // }}
-                        >
-                            <SideNavbar
-                                list={["Participant Information", "Analytics", "Cognitive"]}
-                                active={1}
-                                links={["/participantDashboard", "/participantAnalysis", "/cognitive"]}
-                            />
+        return(
+        <div style={{height:"100%",overflowY:"auto"}} className="bg-image mb-5">
+            <NavBar/>
+            <div className="mb-5"style={{height:"inherit"}}>
+                <Container style={{height:"100%"}}>
+                    <Row style={{height:"100%"}}>
+                        <Col lg={2} style={{height:"75%"}}>
+                            <SideNavbar list={["Participant Information", "Analytics","Cognitive"]} active={1} links={["/participantDashboard","/participantAnalysis","/cognitive"]}/>
                         </Col>
-    
-                        {/* Main Content */}
-                        <Col lg={10} style={{ padding: "20px" }}>
-                            {/* Header Section */}
-                            <Row
-                                style={{
-                                    display: "flex",
-                                    justifyContent: "space-between",
-                                    alignItems: "center",
-                                    marginBottom: "20px",
-                                }}
-                            >
-                                {/* Back to Table */}
-                                <Col md={3}>
-                                    <div className="btn" onClick={() => navigate("/campaignDashboard")}>
-                                        <FaArrowLeft /> Back to Table
-                                    </div>
-                                </Col>
-    
-                                {/* Participant ID */}
-                                <Col md={3} style={{ textAlign: "center" }}>
-                                    <h2>{localStorage.getItem("participantId")}</h2>
-                                </Col>
-                                {/* Day Select */}
-                                <Col md={4} style={{ display: 'flex', justifyContent: 'center', gap: '8px' }}>
-                                            {['S', 'M', 'T', 'W', 'R', 'F', 'Sa'].map((day, index) => (
-                                                <div key={day} style={{ position: 'relative', display: 'inline-block' }}>
-                                                    <input
-                                                        type="radio"
-                                                        name="daySelection"
-                                                        value={day}
-                                                        id={`day-${day}`}
-                                                        checked={selectedDay === day}
-                                                        onChange={handleDayChange}
-                                                        style={{
-                                                            appearance: 'none',
-                                                            width: '20px',
-                                                            height: '20px',
-                                                            borderRadius: '50%',
-                                                            border: '2px solid #ccc',
-                                                            backgroundColor: selectedDay === day ? '#007bff' : 'white',
-                                                            cursor: 'pointer',
-                                                        }}
-                                                    />
-                                                    <label
-                                                        htmlFor={`day-${day}`}
-                                                        style={{
-                                                            position: 'absolute',
-                                                            top: '40%',
-                                                            left: '50%',
-                                                            transform: 'translate(-50%, -50%)',
-                                                            color: selectedDay === day ? 'white' : '#333',
-                                                            fontWeight: 'bold',
-                                                            fontSize: '12px',
-                                                            pointerEvents: 'none',
-                                                        }}
-                                                    >
-                                                        {day}
-                                                    </label>
-                                                </div>
-                                            ))}
-                                        </Col>
-    
-                                {/* Week Range Dropdown */}
-                                <Col md={3} style={{ textAlign: "right", display: "flex", alignItems: "center" }}>
-                                    <span style={{ marginRight: "10px" }}>Week Range:</span>
-                                    <Form.Select
-                                        value={currentDate}
-                                        onChange={handleChangeDate}
-                                        style={{
-                                            height: "40px",
-                                            width: "200px",
-                                            textAlign: "center", // Align text to center
-                                            // backgroundColor: "#e0e0e0", // Greyish color
-                                        }}
-                                    >
-                                        {datesoptions()}
+                        <Col style={{height: "75%"}}>
+                        {alertShow[0]?(alertShow[1] == "danger"? <AlertBox type="danger" message={errorMsg}/>:<></>):<></>}
+                            {/* <h2>{ParticipantData.firstName} {ParticipantData.lastName}  ({ParticipantData.patientId})</h2> */}
+                            <div style={{display:"flex",justifyContent:"space-between"}}>
+                            <div className='btn' onClick={()=> navigate("/campaignDashboard")}><FaArrowLeft></FaArrowLeft>Back to Table</div>
+                            <h2>{localStorage.getItem("participantId")}</h2>
+                            <div style={{display:"flex", alignItems:"center"}}>
+                                <span style={{width: "200px"}}>Week Range : </span><Form.Select value={currentDate} onChange={handleChangeDate} style={{height: "40px"}}>
+                                       {datesoptions()}
                                     </Form.Select>
-                                </Col>
-    
-                                {/* Compliance Card */}
-                                <Col md={3} style={{ textAlign: "center" }}>
-                                <Card className="mt-4" style={{width:"14rem",background:"rgba(255,255,255,0.3)",height:"8rem",display:"flex",justifyContent:"center",alignItems:"center",color:"black"}}>
+                                </div>
+                            {/* <button onClick={()=>{handleDownload()}} className='btn btn-success' style={{marginRight:"0"}}><FaDownload/>  Download Report</button> */}
+                            </div>
+                            <hr/>
+                            <div style={{height:"85%"}}>
+                                <Row style={{height:"100%"}}>
+                                    <Col>
+
+                                    {/* Brief Metrics */}
+                                        <Row style={{display:"flex",justifyContent:"space-evenly"}}>
+                                            {/* <Card style={styling.thumbnail} className="mt-4">
+                                                <h1>{ParticipantData.totalCredits}</h1>
+                                                <div>Total Credits</div>
+                                            </Card> */}
+                                            <Card className="mt-4" style={{width:"14rem",background:"rgba(255,255,255,0.3)",height:"10rem",display:"flex",justifyContent:"center",alignItems:"center",color:"black"}}>
                                                 <div style={{width:"8rem",height:"8rem",position:"relative"}}>
                                                    <CustomCircularProgressBar progress={avgMetrics} text={`${avgMetrics.toFixed(2)}`}/> 
                                                 </div>
                                                 <div>Compliance</div>
                                             </Card>
-                                </Col>
-                            </Row>
-    
-                            {/* Graphs Section */}
-                            {loadingComponents.allQuestions ? (
-                                <Loader />
-                            ) : (
-                                <>
-                                    {/* Row for Numeric and Discrete Data */}
-                                    <Row className="mt-5">
-                                        {/* Numeric Data */}
-                                        <Col md={6}>
-                                        <Card
-                                            style={{
-                                                backgroundColor: "#fff",
-                                                padding: "20px",
-                                                boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2), 0 6px 20px rgba(0, 0, 0, 0.19)",
-                                                minHeight: "300px",
-                                                height: "auto"
-                                            }}
->
+                                            {/* <Card style={styling.thumbnail} className="mt-4">
+                                                <h1>{ParticipantData.avgWearTime} hrs</h1>
+                                                <div>Avg. Wearing Time</div>
+                                            </Card> */}
+                                        </Row>
 
+                                        {/* Graphs */}
+                                        {loadingComponents.allQuestions?<Loader/>:
+                                        <div>
+                                        <Row className='mt-5'>
+                                            <Col>
+                                                <Card style={{width:"800px",background:"rgba(255,255,255,0.8)",padding:"5px",marginLeft:"13%"}}>
+                                                        <Card.Title style={{textAlign:"center"}}><h4>{"Numeric Data".toUpperCase()} <button style={{border:"none", marginRight:0}} onClick={()=>{getNumericData()}}><TbReload /></button></h4></Card.Title>     
+                                                </Card>
+                                                <Card className="mt-3" style={{width:"800px",height:"450px",background:"rgba(255,255,255,0.8)",padding:"5px",marginLeft:"13%"}}>
+                                                    <select style={{border:"none",textAlign:"center",fontSize:"22px"}} onChange={(e)=>{handleNumericQuestionChange(e)}}>
+                                                        {numericQuestions.map(ques => <option value={JSON.stringify(ques)}>{ques.longUIquestion}</option>)}
+                                                    </select>
+                                                    {numericLoading? <Loader/>: (<DashboardChart legends={[numericQuestion.longUIquestion]} data={[numericData.values]} labels={numericData.labels}/>)}
+                                                </Card>
+                                            </Col>
+                                        </Row>
 
-                                                <Card.Title style={{ textAlign: "center" }}>
-                                                    Numeric Data{" "}
-                                                    <TbReload
-                                                        onClick={() => getNumericData()}
-                                                        style={{
-                                                            cursor: "pointer",
-                                                            marginLeft: 10,
-                                                            fontSize: "18px",
-                                                        }}
-                                                    />
-                                                </Card.Title>
-                                                {numericQuestions.length > 0 ? (
-                                                    <>
-                                                        <select
-                                                            style={{
-                                                                borderRadius: "5px",
-                                                                borderColor: "#ccc",
-                                                                width: "100%",
-                                                                padding: "8px",
-                                                                marginBottom: 15,
-                                                                textAlign: "center", // Align text to center
-                                                                backgroundColor: "#e0e0e0", // Greyish color
-                                                            }}
-                                                            onChange={(e) => handleNumericQuestionChange(e)}
-                                                        >
-                                                            {numericQuestions.map((ques) => (
-                                                                <option value={JSON.stringify(ques)}>
-                                                                    {ques.longUIquestion}
-                                                                </option>
-                                                            ))}
-                                                        </select>
-                                                      
+                                        <Row className='mt-5' style={{marginLeft:"13%"}}>
+                                            <Col style={{width:"790px"}}>
+                                            <Card className="mt-5" style={{width:"800px",background:"rgba(255,255,255,0.8)",padding:"5px"}}>
+                                                        <Card.Title style={{textAlign:"center"}}><h4>{"Discrete Data".toUpperCase()} <button style={{border:"none"}} onClick={()=>{getDescereteData()}}><TbReload /></button></h4></Card.Title>     
+                                                </Card>
+                                                <Card className="mt-3" style={{width:"inherit",height:"inherit",background:"rgba(255,255,255,0.8)",padding:"5px"}}>
+                                                <select style={{border:"none",textAlign:"center",fontSize:"22px"}} onChange={(e)=>{handleDescreteQuestionChange(e)}}>
+                                                {descreteQuestions.map(ques => <option value={JSON.stringify(ques)}>{ques.longUIquestion}</option>)}
+                                                    </select>
+                                                   {discreteLoading?<Loader/>: <DescreteBarChart binLabel={descreteData.binLabel} labels={descreteData.labels} data={descreteData.values}/>}
+                                                </Card>
+                                            </Col>
+                                        </Row>
 
-                                                        {numericLoading ? (
-                                                                <Loader />
-                                                                ) : (
-                                                                <>
-                                                                    {console.log("Question:", numericQuestion)}
-                                                                    {console.log("Labels:", numericData.labels)}
-                                                                    {console.log("Values:", numericData.values)}
-                                                                    <DashboardChart
-                                                                     legends={[numericQuestion?.longUIquestion || ""]}
-                                                                    data={[numericData.values]}
-                                                                    labels={numericData.labels}
-                                                                    />
-                                                                </>
-                                                            )}
-
-                                                    </>
-                                                ) : (
-                                                    <>No Numeric Questions Available</>
-                                                )}
+                                        {/* Map */}
+                                        <Row className='mt-5 mb-5'>
+                                            {/* <Col>  DashboardChart
+                                            <Card className="pb-2" style={{background:"rgba(255,255,255,0.3"}}>
+                                                <h4 style={{color:"black", textAlign:"center"}}>GPS Coordinates</h4>
+                                                <Row>
+                                                <Col>
+                                                <Map height={250} defaultCenter={[50.879, 4.6997]} defaultZoom={11}>
+                                                    <Marker width={50} anchor={[50.879, 4.6997]} />
+                                                </Map>
+                                                </Col>
+                                                    {//<CustomLineChart legends={[sensorQuestion.question]} data={[sensorData.values]} labels={sensorData.labels}/>}
+                                                </Row>
                                             </Card>
-                                        </Col>
-    
-                                        {/* Discrete Data */}
-                                        <Col md={6}>
-                                            <Card
-                                                style={{
-                                                    backgroundColor: "#fff",
-                                                    padding: "20px",
-                                                    boxShadow:
-                                                        "0 4px 8px rgba(0, 0, 0, 0.2), 0 6px 20px rgba(0, 0, 0, 0.19)",
-                                                        height: "300px",
-                                                }}
-                                            >
-                                               <Card.Title style={{ textAlign: "center" }}>
-                                                    Discrete Data{" "}
-                                                    <TbReload
-                                                        onClick={() => getDescereteData()}
-                                                        style={{
-                                                            cursor: "pointer",
-                                                            marginLeft: 10,
-                                                            fontSize: "18px",
-                                                        }}
-                                                    />
-                                                </Card.Title>
-                                                {descreteQuestions.length > 0 ? (
-                                                    <>
-                                                        <select
-                                                            style={{
-                                                                borderRadius:"5px", 
-                                                                borderColor:"#ccc", 
-                                                                width:"100%", 
-                                                                paddingLeft:"10px", 
-                                                                textAlign:"center", 
-                                                                backgroundColor:"#e0e0e0"
-                                                            }} 
-                                                            onChange={(e)=>handleDescreteQuestionChange(e)}
-                                                        >
-                                                            {descreteQuestions.map((ques) => (
-                                                                <option value={JSON.stringify(ques)}>
-                                                                    {ques.longUIquestion}
-                                                                </option>
-                                                            ))}
-                                                        </select>
-                                                        {discreteLoading ? (
-                                                            <Loader />
-                                                        ) : (
-                                                            <DescreteWeekBox question={descreteQuestion} data={descreteData} />
-                                                        )}
-                                                    </>
-                                                ) : (
-                                                    <>No Discrete Questions Available</>
-                                                )}
-
-                                            </Card>
-                                        </Col>
-                                    </Row>
-    
-                                    {/* Sensor Data Section */}
-                                    <Row className="mt-5">
-                                    {/* Sensor Data */}
-                                    <Col md={12}>
-                                    <Card className="mt-5" style={{width:"1550px",background:"rgba(255,255,255,0.8)",padding:"5px"}}>
+                                            </Col> */}
+                                            <Col>
+                                            <Card className="mt-5" style={{width:"800px",background:"rgba(255,255,255,0.8)",padding:"5px",marginLeft:"13%"}}>
                                                         <Card.Title style={{textAlign:"center"}}><h4>{"Sensor Data".toUpperCase()}<button style={{border:"none"}} onClick={()=>{getSensorData()}}><TbReload /></button></h4></Card.Title>     
                                                 </Card>
-                                            <Card className="mt-3" style={{width:"1550px",height:"450px",background:"rgba(255,255,255,0.8)",padding:"5px"}}>
+                                            <Card className="mt-3" style={{marginLeft:"13%",width:"800px",height:"450px",background:"rgba(255,255,255,0.8)",padding:"5px"}}>
                                                     <select style={{border:"none",textAlign:"center",fontSize:"22px"}} onChange={(e)=>{handleSensorQuestionChange(e)}}>
                                                         {sensorQuestions.map((question,index)=>{
                                                             return(<option value={JSON.stringify(question)}>{question.question}</option>)
@@ -861,21 +686,27 @@ function ParticipantAnalysis(props){
                                                 sensorLoading?<Loader/>:<GpsGraph legends={[sensorQuestion.question]} data={sensorData.values} labels={sensorData.labels}/>:
                                                 sensorLoading?<Loader/>:<CustomLineChart legends={[sensorQuestion.question]} data={[sensorData.values]} labels={sensorData.labels}/>
                                                 }
-                                            </Card>
+                                                    
+                                                    
+                                                </Card>
+                                            </Col>
+                                        </Row>
+
+                                
+                                </div>}
+                
                                     </Col>
                                 </Row>
-
-                                </>
-                            )}
+                            </div>
                         </Col>
                     </Row>
                 </Container>
             </div>
+
         </div>
-    );   
-}    
-    
-    
+    );
+
+}
 
 const mapStateToProps = (state,ownProps) =>{
     return {

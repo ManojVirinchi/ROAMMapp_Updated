@@ -43,13 +43,18 @@ function NavBar(props){
     return(
         <div style={{marginBottom:"30px"}}>
         <Navbar variant='light'>
-        <Container>
-            <Navbar.Brand href="/">ROAMM</Navbar.Brand>
+        {/* <Container> */}
+            <Navbar.Brand href="/" style={{padding: '10px'}}>ROAMM</Navbar.Brand>
             <Nav className="ms-auto">
                 {!localStorage.getItem("isLoggedIn") && <div onClick={()=>{navigate("/")}}>Login</div>}
-                { localStorage.getItem("isLoggedIn") && <div onClick={()=>{handleLogout();navigate("/");}}>Logout</div>}
+                { localStorage.getItem("isLoggedIn") && <div onClick={()=>{handleLogout();navigate("/");}} style={{
+                                    cursor: 'pointer',
+                                    padding: '10px',
+                                    marginLeft: 'auto',
+                                    fontWeight: 'bold',
+                                }}>Logout</div>}
             </Nav>
-        </Container>
+        {/* </Container> */}
       </Navbar>
       <br />
         </div>

@@ -1,6 +1,7 @@
 import React,{useState,useEffect} from 'react';
 import { Col, Row, Container, Table, Form ,Card} from 'react-bootstrap';
-import NavBar from '../Components/NavBar';
+import NavBar from '../Components/NavBar'
+
 import SideNavbar from '../Components/SideNavbar';
 import '../index.css'
 import {connect} from "react-redux"
@@ -114,7 +115,7 @@ function ParticipantDashboard(props){
         <div style={{height:"100%",overflowY:"auto"}} className="bg-image">
             <NavBar/>
             <div style={{height:"inherit"}}>
-                <Container style={{height:"100%"}}>
+                <Container fluid style={{height:"100%"}}>
                     <Row style={{height:"100%"}}>
                         <Col lg={2} style={{height:"75%"}}>
                             <SideNavbar list={["Participant Information", "Analytics","Cognitive"]} active={0} links={["/participantDashboard","/participantAnalysis","/cognitive"]}/>

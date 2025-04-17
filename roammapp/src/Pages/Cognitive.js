@@ -135,7 +135,7 @@ function Cognitive(props){
         <div style={{height:"100%",overflowY:"auto"}} className="bg-image mb-5">
         <NavBar/>
         <div className="mb-5"style={{height:"inherit"}}>
-            <Container style={{height:"100%"}}>
+            <Container fluid style={{height:"100%"}}>
                 <Row style={{height:"100%"}}>
                     <Col lg={2} style={{height:"75%"}}>
                         <SideNavbar list={["Participant Information", "Analytics","Cognitive"]} active={2} links={["/participantDashboard","/participantAnalysis","/cognitive"]}/>
