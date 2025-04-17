@@ -847,10 +847,10 @@ function ParticipantAnalysis(props){
                                     <Row className="mt-5">
                                     {/* Sensor Data */}
                                     <Col md={12}>
-                                    <Card className="mt-5" style={{width:"1550px",background:"rgba(255,255,255,0.8)",padding:"5px"}}>
+                                    <Card className="mt-5" style={{width:"100%",background:"rgba(255,255,255,0.8)",padding:"5px"}}>
                                                         <Card.Title style={{textAlign:"center"}}><h4>{"Sensor Data".toUpperCase()}<button style={{border:"none"}} onClick={()=>{getSensorData()}}><TbReload /></button></h4></Card.Title>     
                                                 </Card>
-                                            <Card className="mt-3" style={{width:"1550px",height:"450px",background:"rgba(255,255,255,0.8)",padding:"5px"}}>
+                                            <Card className="mt-3" style={{width:"100%",height:"450px",background:"rgba(255,255,255,0.8)",padding:"5px"}}>
                                                     <select style={{border:"none",textAlign:"center",fontSize:"22px"}} onChange={(e)=>{handleSensorQuestionChange(e)}}>
                                                         {sensorQuestions.map((question,index)=>{
                                                             return(<option value={JSON.stringify(question)}>{question.question}</option>)
